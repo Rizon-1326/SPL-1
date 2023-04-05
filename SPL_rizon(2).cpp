@@ -12,6 +12,7 @@
 #include<stdlib.h>
 //#include<graphics.h>
 static int x=1;
+int t=15;
 #define pos gotoxy(30,x++)
 #define ln  printf(".......................");
 
@@ -55,7 +56,7 @@ void scorecard();
 void help();
 void About_me();
 string name;
-int t=30;
+
 int c=0;
 int main();
 void console_print(string pin)
@@ -89,7 +90,7 @@ float random_word(vector <string> big,int level)
     int r,letter,ch;
 
     srand(time(NULL)) ;
-    x=2;
+    //  x=2;
     //setcolor(12);
 
     begin=clock();
@@ -119,7 +120,7 @@ float random_word(vector <string> big,int level)
 
             delay(10000);
             getscore(accuracy,speed,level);
-          main();
+            main();
         }
         if(input == false)
         {
@@ -177,10 +178,43 @@ void read_word_by_word(string filename,int level)
     random_word(big,level);
     cout<<endl;
 }
+fstream readsavefiles, writesavefiles;
+fstream userFiles[10];
+int totalfiles = 0;
+
+bool check(string name)
+{
+    string s;
+    int tf = totalfiles;
+    while(tf--)
+    {
+        readsavefiles << s;
+        if(name == s)
+        {
+            readsavefiles.close();
+            readsavefiles.open("savefile.txt", ios_base::in);
+            return true;
+        }
+    }
+    readsavefiles.close();
+    readsavefiles.open("savefile.txt", ios_base::in);
+    return false;
+}
+
+void createFile(string name)
+{
+    if(!check(name))
+    {
+        userFiles[totalfiles].open(name+".txt", ios_base::out);
+        writesavefiles << name << "\n";
+        totalfiles++;
+    }
+}
 
 int main()
 {
-
+    writesavefiles.open("savefile.txt", ios_base::app);
+    readsavefiles.open("savefile.txt", ios_base::in);
     time_t t;
     time(&t);
     x=1;
@@ -200,6 +234,7 @@ int main()
         cout<<"Enter typer's name::"<<endl;
         gotoxy(30,4);
         cin>>name;
+        createFile(name);
     }
     c++;
     system("cls");
@@ -290,7 +325,7 @@ void English()
     gotoxy(30,04);
     cout<<"1.Easy"<<endl;
     gotoxy(30,05);
-    cout<<"2.Midium"<<endl;
+    cout<<"2.Medium"<<endl;
     gotoxy(30,06);
     cout<<"3.Hard"<<endl;
     gotoxy(30,07);
@@ -388,16 +423,11 @@ void sett()
 
 void getscore(int accuracy,int speed,int level)
 {
-    int x=2;
-    FILE *fp;
-    fp=fopen("file.txt","a");
-    pos;
-    if(fp==NULL)
-        printf("error in opening file");
-    fprintf(fp,"\nname=%s   accuracy=%d    speed=%d    level=%d",name,accuracy,speed,level);
-    fclose(fp);
-    pos;
-    printf("Scorecard updated");
+    // fstream file(name+".txt", ios_base::app);
+    fstream file;
+    file.open(name+".txt", ios_base::app);
+    file << accuracy << " " << speed << " " << level << "\n";
+    file.close();
 }
 
 
@@ -410,7 +440,8 @@ void scorecard()
     cout<<"....The scores are...."<<endl;
     ifstream file("file.txt");
     char ck;
-    while (file.get(ck)) {
+    while (file.get(ck))
+    {
         cout << ck;
     }
     file.close();
@@ -423,9 +454,9 @@ void help()
     system("cls");
     gotoxy(7,5);
     setcolor(6);
-    cout<<"#......Rules of the Game......#";
+    cout<<"#......Rules of the Test......#";
     gotoxy(7,6);
-    cout<<"=>Enter your name as player name";
+    cout<<"=>Enter your name as typer name";
     gotoxy(7,7);
     cout<<"=>Set the time limit under option 3 in main menu(default limit is 30 sec)";
     gotoxy(7,8);
